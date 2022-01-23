@@ -23,5 +23,5 @@ class PokemonName(models.Model):
 
   def __str__(self):
     name = self.name
-    form_name = "" if self.form_name == "" else "（" + self.form_name + "）"
+    form_name = '' if self.form_name == '' else '（{}）'.format(self.form_name)
     return name + form_name

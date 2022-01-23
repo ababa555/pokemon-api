@@ -1,2 +1,2 @@
-from .Pokemon import Pokemon
-from .PokemonName import PokemonName
+from .pokemon import Pokemon
+from .pokemon_name import PokemonName

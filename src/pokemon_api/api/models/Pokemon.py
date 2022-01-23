@@ -6,7 +6,7 @@ class Pokemon(models.Model):
     ordering = ['order']
     verbose_name = verbose_name_plural = 'ポケモン'
 
-  id = models.CharField(primary_key=True, editable=False, max_length=5)
+  id = models.CharField(primary_key=True, max_length=5)
   no = models.IntegerField(verbose_name='No')
   height = models.IntegerField(verbose_name='高さ')
   weight = models.IntegerField(verbose_name='重さ')
@@ -15,4 +15,4 @@ class Pokemon(models.Model):
   created_at = models.DateTimeField(verbose_name='登録日')
 
   def __str__(self):
-    return self.no
+    return str(self.no)
