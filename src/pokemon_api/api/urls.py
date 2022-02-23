@@ -1,6 +1,5 @@
-from django.urls import path, include
-from . import views
-from rest_framework.routers import DefaultRouter
+from django.urls import path
+import api.views as views
 
 urlpatterns = [
   path('pokemons/', views.PokemonListAPIView.as_view()),
