@@ -3,6 +3,8 @@ from django.db import models
 from . import Pokemon
 
 class PokemonName(models.Model):
+  pokemon = models.ForeignKey(Pokemon, on_delete=models.CASCADE)
+
   class Meta:
     db_table = 'pokemon_name'
     ordering = ['pokemon_id', 'local_language_id']
@@ -14,14 +16,14 @@ class PokemonName(models.Model):
       ),
     ]
 
-  pokemon_id = models.CharField(verbose_name='ポケモンID', max_length=5)
+  id = models.CharField(primary_key=True, max_length=7)
   local_language_id = models.IntegerField(verbose_name='言語')
   name = models.CharField(verbose_name='ポケモン名', max_length=10)
   form_name = models.CharField(verbose_name='フォルム名', max_length=20, null=True, blank=True)
-
-  pokemon_data = models.ForeignKey(Pokemon, verbose_name='ポケモン', on_delete=models.CASCADE)
+  pokemon = models.ForeignKey(Pokemon, verbose_name='ポケモン', on_delete=models.CASCADE)
 
   def __str__(self):
     name = self.name
+    return name
     form_name = '' if not self.form_name else '（{}）'.format(self.form_name)
     return name + form_name

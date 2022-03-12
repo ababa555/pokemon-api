@@ -10,6 +10,14 @@ class PokemonListAPIView(views.APIView):
     serializer = PokemonListSerializer(pokemons)
     return Response(serializer.data, status.HTTP_200_OK)
 
+  def post(self, request, *args, **kwargs):
+    serializer = PokemonListSerializer(data=request.data)
+    pokemons = Pokemon.objects.all()
+    pokemons.delete()
+    serializer.is_valid(raise_exception=True)
+    serializer.save()
+    return Response(serializer.data, status.HTTP_201_CREATED)
+
 class PokemonAPIView(views.APIView):
   def get(self, request, pk, format=None):
     try:
@@ -19,3 +27,4 @@ class PokemonAPIView(views.APIView):
 
     serializer = PokemonSerializer(pokemon)
     return Response(serializer.data, status.HTTP_200_OK)
+

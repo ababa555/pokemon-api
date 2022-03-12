@@ -1,8 +1,9 @@
 from django.db import models
+from django.utils import timezone
 
 class Pokemon(models.Model):
   class Meta:
-    db_table = 'pokeomn'
+    db_table = 'pokemon'
     ordering = ['order']
     verbose_name = verbose_name_plural = 'ポケモン'
 
@@ -12,7 +13,7 @@ class Pokemon(models.Model):
   weight = models.IntegerField(verbose_name='重さ')
   order = models.IntegerField(verbose_name='並び順')
   is_default = models.BooleanField(verbose_name='デフォルトフォルム')
-  created_at = models.DateTimeField(verbose_name='登録日')
+  created_at = models.DateTimeField(verbose_name='登録日', default=timezone.now)
 
   def __str__(self):
-    return str(self.no)
+    return str(self.id)
