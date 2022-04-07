@@ -7,4 +7,6 @@ urlpatterns = [
 
   path('pokemon-names/', views.PokemonNameListAPIView.as_view()),
   path('pokemon-names/<pk>/', views.PokemonNameAPIView.as_view()),
+
+  path('health/', views.HealthAPIView.as_view()),
 ]
