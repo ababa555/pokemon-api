@@ -16,7 +16,7 @@ class PokemonName(models.Model):
       ),
     ]
 
-  id = models.CharField(primary_key=True, max_length=7)
+  id = models.CharField(primary_key=True, max_length=10)
   local_language_id = models.IntegerField(verbose_name='言語')
   name = models.CharField(verbose_name='ポケモン名', max_length=10)
   form_name = models.CharField(verbose_name='フォルム名', max_length=20, null=True, blank=True)
@@ -24,6 +24,5 @@ class PokemonName(models.Model):
 
   def __str__(self):
     name = self.name
-    return name
     form_name = '' if not self.form_name else '（{}）'.format(self.form_name)
-    return name + form_name
+    return str(self.id) +  ' ' + name +  ' ' + form_name

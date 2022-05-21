@@ -1,39 +1,50 @@
+from crypt import methods
 from django.http import Http404
 from rest_framework import status, views
 from rest_framework.response import Response
+from rest_framework.decorators import action
+
 from ..models import Pokemon, PokemonName
-from ..serializers import PokemonSerializer, PokemonNameSerializer, PokemonNameListSerializer
+from ..serializers import PokemonSerializer, PokemonNameSerializer, PokemonNameListSerializer, PokemonNameWithPokemonSerializer, PokemonNameWithPokemonListSerializer
+from ..services import PokemonNameService
+from ..repositories import PokemonNameRepository
 
-# http://127.0.0.1:8000/api/pokemon-names/?name=あ
-class PokemonNameListAPIView(views.APIView):  
+# http://127.0.0.1:8000/api/pokemon-names/?version=1&local_language_id=1&id=n1&mode=1
+class PokemonNameListAPIView(views.APIView):
+  # https://nobunobu1717.site/?p=1371
+
+  def get_serializer_class(self, request):
+    if request.query_params.get('mode') == "1":
+      return PokemonNameWithPokemonListSerializer
+    return PokemonNameListSerializer
+
   def get(self, request, format=None):
-    print(request.query_params)
-    
+    id = request.query_params.get('id')
+    version = request.query_params.get('version')
     local_language_id = request.query_params.get('local_language_id')
-    if local_language_id:
-      pokemonNames = PokemonName.objects.filter(
-        local_language_id=local_language_id
-      )
-
     name = request.query_params.get('name')
-    if name:
-      pokemonNames = PokemonName.objects.filter(
-        name__icontains=name
-      )
+    
+    service = PokemonNameService(PokemonNameRepository())
+    list = service.find(id, version, local_language_id, name)
+    
+    if not list:
+      return Response(status.HTTP_404_NOT_FOUND)
 
-    serializer = PokemonNameListSerializer(pokemonNames)
+    serializer_class = self.get_serializer_class(request)
+    serializer = serializer_class(list)
+
     return Response(serializer.data, status.HTTP_200_OK)
 
   def post(self, request, *args, **kwargs):
-    pokemonNames = []
+    list = []
     for data in request.data:
       pokemonName = data
       pokemonName["id"] = data["pokemon_id"] + "-" + data["local_language_id"]
-      pokemonNames.append(pokemonName)
+      list.append(pokemonName)
 
-    serializer = PokemonNameListSerializer(data=pokemonNames)
-    pokemonNames = PokemonName.objects.all()
-    pokemonNames.delete()
+    serializer = PokemonNameListSerializer(data=list)
+    list = PokemonName.objects.all()
+    list.delete()
     serializer.is_valid(raise_exception=True)
     serializer.save()
     
@@ -42,9 +53,9 @@ class PokemonNameListAPIView(views.APIView):
 class PokemonNameAPIView(views.APIView):
   def get(self, request, pk, format=None):
     try:
-      pokemonName = PokemonName.objects.get(pk=pk)
+      data = PokemonName.objects.get(pk=pk)
     except Pokemon.DoesNotExist:
       raise Http404("data not found")
 
-    serializer = PokemonNameSerializer(pokemonName)
+    serializer = PokemonNameSerializer(data)
     return Response(serializer.data, status.HTTP_200_OK)
