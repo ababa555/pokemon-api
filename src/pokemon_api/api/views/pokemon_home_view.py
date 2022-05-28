@@ -10,11 +10,10 @@ class PokemonHOMEAPIView(views.APIView):
   def get(self, request, format=None):
     season_id = request.query_params.get('season_id')
     pokemon_id = request.query_params.get('pokemon_id')
-    # season_id = "10301"
-    # pokemon_id = "3-n26a"
+    type = request.query_params.get('type')
 
     service = PokemonHomeService(PokemonHomeRepository())
-    list = service.find(season_id, pokemon_id)
+    list = service.find(season_id, pokemon_id, type)
 
     serializer = PokemonHomeListSerializer(list)
 
