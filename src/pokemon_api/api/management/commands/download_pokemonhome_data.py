@@ -9,6 +9,7 @@ from django.core.management.base import BaseCommand
 
 class Command(BaseCommand):
   def add_arguments(self, parser):
+    parser.add_argument('--generation', nargs=1, default=1, required=True)
     parser.add_argument('--seasons', nargs='+')
 
   def handle(self, *args, **options):
@@ -22,17 +23,13 @@ class Command(BaseCommand):
       return
 
     seasons = responseJson["list"]
-    for i in seasons:
-      season = seasons[i]
+    targetSeasonIndexes = sorted(set([int(i) for i in seasons]), reverse=True)[:int(options['generation'][0])]
     
-      if not self.contains_season_in_options(i, options['seasons']):
-        continue
+    for i in targetSeasonIndexes:
+      season = seasons[str(i)]
     
       for season_id in season:
         target_season = season[season_id]
-        # id = "10301"
-        # rst = "0"
-        # ts2 = "1651551577"
         id = season_id
         rst = target_season["rst"]
         ts2 = target_season["ts2"]
@@ -40,15 +37,10 @@ class Command(BaseCommand):
         for i in range(1, 6):
           pdetails = self.get_pdetails(id, rst, ts2, i)
           file_path = os.path.join(BASE_DIR, "static/json/pdetail", f"{id}-{i}.json")
+          os.makedirs(os.path.dirname(file_path), exist_ok=True)
           with open(file_path, mode='w') as f:
             data = pdetails.json()
             json.dump(data, f, ensure_ascii=False, indent=2)
-
-  def contains_season_in_options(self, target_season, args_seasons):
-    if args_seasons is None:
-      return True
-
-    return target_season in [season for season in args_seasons[0].split()]
 
   def get_pokemons(self, id, rst, ts2):
     headers = {

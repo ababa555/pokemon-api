@@ -9,12 +9,10 @@ from ..serializers import PokemonSerializer, PokemonNameSerializer, PokemonNameL
 from ..services import PokemonNameService
 from ..repositories import PokemonNameRepository
 
-# http://127.0.0.1:8000/api/pokemon-names/?version=1&local_language_id=1&id=n1&mode=1
+# http://127.0.0.1:8000/api/pokemon-names/?version=1&local_language_id=1&id=n1&format=1
 class PokemonNameListAPIView(views.APIView):
-  # https://nobunobu1717.site/?p=1371
-
   def get_serializer_class(self, request):
-    if request.query_params.get('mode') == "1":
+    if request.query_params.get('format') == "1":
       return PokemonNameWithPokemonListSerializer
     return PokemonNameListSerializer
 
